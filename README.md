@@ -148,3 +148,111 @@ AniMondo - это веб-портал для поклонников аниме, 
 
 ## Диаграмма
 ![Диаграмма](diagram_lab2.png)
+
+[Таблицы с сайта dbdiagram.io](https://dbdiagram.io/)
+
+```
+Table user {
+  id int [primary key, increment]
+  role_id int [not null]
+  username varchar(50) [not null, unique]
+  password varchar(255) [not null]
+  email varchar(100) [not null]
+  phone varchar(20) [unique]
+  created_at datetime [default: 'now()']
+  updated_at datetime [default: 'now()']
+}
+Table role {
+  id int [primary key, increment]
+  name varchar(50) [not null, unique]
+}
+Table user_profile {
+  id int [primary key, increment]
+  user_id int [not null, unique]
+  name varchar(100)
+  sirname varchar(100)
+  gender varchar(10)
+  birth_date date
+  avatar_url varchar(255)
+}
+Table user_action_log {
+  id int [primary key, increment]
+  user_id int [not null]
+  action_text varchar(255) [not null]
+  time datetime [default: 'now()']
+}
+Table anime { 
+  id int [primary key, increment]
+  title varchar(255) [not null]
+  description text
+  release_date date
+  poster_url varchar(255)
+  publisher_id int
+}
+Table genre {
+  id int [primary key,increment]
+  title varchar(50) [not null, unique]
+}
+Table anime_genre {
+  anime_id int [not null]
+  genre_id int [not null]
+}
+Table publisher {
+  id int [primary key, increment]
+  name varchar(100) [not null]
+  description varchar(255)
+  wiki_link varchar(255)
+  photo_url varchar(255)
+}
+Table watch_links {
+  id int [primary key, increment]
+  anime_id int [not null]
+  platform_id int [not null]
+  watch_link varchar(255)
+}
+Table anime_platform {
+  id int [primary key, increment]
+  platform_name varchar(50) [not null, unique]
+}
+Table review {
+  id int [primary key, increment]
+  user_id integer [not null]
+  anime_id integer [not null]
+  rating double  [not null]
+  content text
+  created_at datetime [default: 'now()']
+}
+Table bookmark {
+  id int [primary key, increment]
+  user_id int [not null]
+  status_id int [not null]
+  anime_id int [not null]
+  created_at datetime [default: 'now()']
+}
+Table bookmark_status {
+  id int [primary key, increment]
+  status varchar(50) [not null]
+}
+Table review_like {
+  id int [primary key, increment]
+  user_id int [not null]
+  review_id int [not null]
+  is_like bool
+}
+
+Ref: user.role_id  < role.id
+Ref: user.id - user_profile.user_id
+Ref: user.id < user_action_log.id
+Ref: anime.id < anime_genre.anime_id
+Ref: anime_genre.genre_id > genre.id
+Ref: anime.publisher_id > publisher.id
+Ref: anime.id < watch_links.anime_id
+Ref: review.user_id > user.id
+Ref: review.anime_id > anime.id
+Ref: bookmark.user_id > user.id
+Ref: bookmark.anime_id > anime.id
+Ref: bookmark.status_id < bookmark_status.id
+Ref: user.id < review_like.user_id
+Ref: review_like.review_id > review.id
+Ref: watch_links.platform_id > anime_platform.id
+```
