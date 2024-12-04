@@ -1,0 +1,131 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #007bff;
+    margin-top: 20px;
+}
+
+form {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    font-size: 1rem;
+    color: #555;
+    margin-top: 10px;
+    display: block;
+}
+
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+form textarea {
+    resize: none;
+    height: 100px;
+}
+
+form button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button[type="submit"]:hover {
+    background-color: #4d4fbf;
+}
+
+#watch-links-container {
+    margin-top: 15px;
+}
+
+.watch-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.watch-link input {
+    flex: 1;
+}
+
+.watch-link select {
+    width: 150px;
+}
+
+.watch-link .remove-link {
+    background-color: #ff4b5c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.watch-link .remove-link:hover {
+    background-color: #d63d4c;
+}
+
+#add-link-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+#add-link-button:hover {
+    background-color: #4d4fbf;
+}
+
+select[multiple] {
+    height: 100px;
+    overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+    form {
+        padding: 15px;
+    }
+    .watch-link {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .watch-link select {
+        width: 100%;
+    }
+}

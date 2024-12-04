@@ -1,0 +1,194 @@
+.admin-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-panel h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+table th a {
+    color: white;
+    text-decoration: none;
+}
+
+table th a:hover {
+    text-decoration: underline;
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    color: #007bff;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #d6d6d6;
+}
+
+.button {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    color: white;
+    background-color: #007bff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.disabled-button {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    color: #aaa;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+
+/* Основные стили для блока удаления логов */
+
+.log-cleanup {
+    max-width: 500px;
+    /* Максимальная ширина блока */
+    margin: 20px auto;
+    /* Центрируем блок по горизонтали */
+    padding: 20px;
+    /* Внутренний отступ */
+    background-color: #f9f9f9;
+    /* Светлый фон */
+    border: 1px solid #ddd;
+    /* Светлая граница */
+    border-radius: 8px;
+    /* Закругленные углы */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Легкая тень */
+}
+
+
+/* Заголовок */
+
+.log-cleanup h2 {
+    text-align: center;
+    /* Центрируем текст */
+    color: #333;
+    /* Цвет текста */
+    margin-bottom: 20px;
+    /* Отступ снизу */
+}
+
+
+/* Стили для формы */
+
+.log-cleanup form {
+    display: flex;
+    /* Используем flexbox для размещения элементов */
+    flex-direction: column;
+    /* Элементы в колонку */
+}
+
+
+/* Стили для меток */
+
+.log-cleanup label {
+    margin-bottom: 8px;
+    /* Отступ снизу */
+    font-weight: bold;
+    /* Жирный текст */
+    color: #555;
+    /* Цвет текста */
+}
+
+
+/* Стили для поля ввода */
+
+.log-cleanup input[type="number"] {
+    padding: 10px;
+    /* Внутренний отступ */
+    border: 1px solid #ccc;
+    /* Светлая граница */
+    border-radius: 4px;
+    /* Закругленные углы */
+    margin-bottom: 20px;
+    /* Отступ снизу */
+    font-size: 16px;
+    /* Размер шрифта */
+}
+
+
+/* Стили для кнопки */
+
+.button {
+    padding: 10px 15px;
+    /* Внутренний отступ */
+    color: white;
+    /* Цвет текста */
+    background-color: #007bff;
+    /* Цвет фона кнопки */
+    border: none;
+    /* Убираем границу */
+    border-radius: 4px;
+    /* Закругленные углы */
+    cursor: pointer;
+    /* Курсор при наведении */
+    font-size: 16px;
+    /* Размер шрифта */
+    transition: background-color 0.3s;
+    /* Плавный переход цвета */
+}
+
+
+/* Эффект при наведении на кнопку */
+
+.button:hover {
+    background-color: #0056b3;
+    /* Темный цвет при наведении */
+}

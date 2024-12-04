@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Пользователи
+{% endblock %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/users.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<h3 class="h3-users">Users List</h3>
+<table id="usersTable" class="styled-table" border="1">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Роль</th>
+            <th>Имя пользователя</th>
+            <th>Почта</th>
+            <th>Телефон</th>
+            <th>Дата регистрации</th>
+            <th>Дата изменения</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr class="user-row" data-id="{{ user.id }}" data-username="{{ user.username }}" data-email="{{ user.email }}" data-phone="{{ user.phone or '' }}" data-role="{{ user.role }}">
+                <td>{{ user.id }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.phone }}</td>
+                <td>{{ user.created_at }}</td>
+                <td>{{ user.updated_at }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Информация о пользователе</h2>
+        <form id="userForm">
+            <input type="hidden" id="userId" name="id">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" class="input-field" name="username" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" class="input-field" name="email" required>
+            <label for="phone">Телефон:</label>
+            <input type="text" id="phone" class="input-field" name="phone">
+            <label for="role">Роль:</label>
+            <select id="role" class="select-field" name="role">
+                <option value="1">Админ</option>
+                <option value="2">Пользователь</option>
+            </select>
+            <div class="modal-actions">
+                <button type="submit" id="saveButton" class="btn btn-primary">Сохранить</button>
+                <button id="deleteButton" class="btn btn-danger">Удалить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+
+{% endblock %}

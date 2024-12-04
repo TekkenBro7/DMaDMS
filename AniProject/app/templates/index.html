@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime.css') }}">
+{% endblock %}
+
+{% block title %}
+    AniMondo
+{% endblock %}
+
+{% block content %}
+
+<div class="container-view">
+    <h1>User Information</h1>
+    
+    {% if user.is_authenticated %}
+        <h2 class="welcome-message">Welcome, {{ user.username }}!</h2>
+        <p class="user-details">User ID: {{ user.id }}</p>
+        <p class="user-role">Role: {{ user.role }}</p>
+        
+        {% if user.role == 'Admin' %}
+            <p class="access-level">You have full access to the system.</p>
+        {% elif user.role == 'User' %}
+            <p class="access-level">You have limited access to the system.</p>
+        {% else %}
+            <p class="access-level">Your role is not defined.</p>
+        {% endif %}
+    {% else %}
+        <h2 class="welcome-message">Welcome, Guest!</h2>
+        <p>Please log in to access more features.</p>
+    {% endif %}
+</div>
+
+    <h1 class="anime-title">Список аниме</h1>
+    <input type="text" id="search-input" placeholder="Поиск аниме..." class="search-bar">
+
+    <div class="sorting-buttons">
+        <button class="sort-button" data-sort="title" data-order="asc">Сортировать по названию</button>
+        <button class="sort-button" data-sort="release_date" data-order="asc">Сортировать по дате выхода</button>
+        <button class="sort-button" data-sort="age_limit" data-order="asc">Сортировать по возрасту</button>
+    </div>
+
+    <div class="anime-list">
+        {% for anime in anime %}
+            <div class="anime-card" data-title="{{ anime.title }}" data-release_date="{{ anime.release_date }}" data-age_limit="{{ anime.age_limit }}">
+                <a href="{{ url_for('anime.anime_detail', anime_id=anime.id) }}" class="anime_ref">
+                    <img src="{{ url_for('static', filename='img/anime/' + (anime.poster_url if anime.poster_url else 'default.png')) }}" alt="Постер {{ anime.title }}" class="anime-poster">
+                    <div class="info">
+                        <h3 class="anime-card-title">{{ anime.title }}</h3>
+                        <p class="release-date">Дата выхода: {{ anime.release_date }}</p>
+                        <p class="genres">Жанры: {{ anime.genres | join(', ') }}</p>
+                        <p class="age-limit" 
+                            style="color: {{ 'green' if user_age and user_age >= anime.age_limit else 'red' }}">
+                            Возраст: {{ anime.age_limit }}+
+                        </p>
+                        {% if anime.publisher_name %}
+                            <p class="publisher">Издатель: {{ anime.publisher_name }}</p>
+                        {% endif %}
+                        <div class="watch-links">
+                            {% set has_access = false %}
+                            {% set has_links = false %}
+                            {% for link in anime.watch_links %}
+                                {% if link %}
+                                    {% set has_links = true %}
+                                    {% if user_age and user_age >= anime.age_limit %}
+                                        <a href="{{ link.split(' ')[0] }}" target="_blank" class="watch-link">{{ link }}</a>
+                                        {% set has_access = true %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if not has_access and has_links and user_age and user_age >= anime.age_limit %}
+                                <p class="no-link">Ссылка недоступна для вашего возраста</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('search-input');
+        const animeList = document.querySelectorAll('.anime-card');
+        const animeContainer = document.querySelector('.anime-list'); 
+        const sortButtons = document.querySelectorAll('.sort-button');
+
+        sortButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const sortKey = button.dataset.sort;
+                const sortOrder = button.dataset.order;
+                sortButtons.forEach(btn => {
+                    btn.classList.remove('active-asc', 'active-desc');
+                });
+                const animeCards = Array.from(document.querySelectorAll('.anime-card'));
+                animeCards.sort((a, b) => {
+                    const aValue = a.dataset[sortKey];
+                    const bValue = b.dataset[sortKey];
+    
+                    if (sortKey === 'release_date') {
+                        return sortOrder === 'asc'
+                            ? new Date(aValue) - new Date(bValue)
+                            : new Date(bValue) - new Date(aValue);
+                    } else if (sortKey === 'age_limit') {
+                        return sortOrder === 'asc'
+                            ? parseInt(aValue) - parseInt(bValue)
+                            : parseInt(bValue) - parseInt(aValue);
+                    } else {
+                        return sortOrder === 'asc'
+                            ? aValue.localeCompare(bValue)
+                            : bValue.localeCompare(aValue);
+                    }
+                });
+                button.dataset.order = sortOrder === 'asc' ? 'desc' : 'asc';
+                button.classList.add(sortOrder === 'asc' ? 'active-asc' : 'active-desc');
+                animeCards.forEach(card => animeContainer.appendChild(card));
+            });
+        });
+
+        animeList.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('highlight');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('highlight');
+            });
+        });
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            animeList.forEach(card => {
+                const cardText = card.innerText.toLowerCase();
+                if (cardText.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });    
+</script>
+
+{% endblock %}

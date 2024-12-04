@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_anime.css') }}">
+{% endblock %}
+
+{% block title %}
+    Изменить аниме
+{% endblock %}
+
+{% block content %}
+    <h1>Изменить аниме</h1>
+    <form action="{{ url_for('anime.edit_anime', anime_id=anime.id) }}" method="POST" enctype="multipart/form-data">
+        <label for="title">Название:</label>
+        <input type="text" id="title" name="title" value="{{ anime.title }}" required><br>
+
+        <label for="description">Описание:</label>
+        <textarea id="description" name="description">{{ anime.description }}</textarea><br>
+
+        <label for="release_date">Дата выхода:</label>
+        <input type="date" id="release_date" name="release_date" value="{{ anime.release_date }}" required><br>
+
+        <label for="poster">Постер:</label>
+        <img src="{{ url_for('static', filename='img/anime/' + anime.poster_url) }}" alt="Текущий постер" style="max-width: 200px;"><br>
+
+        <input type="file" id="poster" name="poster" accept="image/*"><br>
+
+        <label for="age_limit">Возрастное ограничение:</label>
+        <input type="number" id="age_limit" name="age_limit" min="0" value="{{ anime.age_limit }}" required><br>
+
+        <label for="publisher_id">Издатель:</label>
+        <select id="publisher_id" name="publisher_id" required>
+            {% for publisher in publishers %}
+                <option value="{{ publisher[0] }}" {% if publisher[0] == anime.publisher_id %}selected{% endif %}>
+                    {{ publisher[1] }}
+                </option>
+            {% endfor %}
+        </select><br>
+
+        <label for="genres">Жанры:</label>
+        <select id="genres" name="genres[]" multiple>
+            {% for genre in all_genres %}
+                <option value="{{ genre[0] }}" {% if genre[0] in anime_genre_ids %}selected{% endif %}>
+                    {{ genre[1] }}
+                </option>
+            {% endfor %}
+        </select><br>
+
+        <div id="watch-links-container">
+            <label>Ссылки для просмотра:</label>
+            {% for link, platform_id in watch_links %}
+                <div class="watch-link">
+                    <input type="text" name="watch_links[]" value="{{ link }}" placeholder="Ссылка на просмотр" required>
+                    <select name="platform_ids[]">
+                        {% for platform in platforms %}
+                            <option value="{{ platform[0] }}" {% if platform[0] == platform_id %}selected{% endif %}>
+                                {{ platform[1] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="remove-link">Удалить</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-link-button">Добавить ссылку</button><br>
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('watch-links-container');
+            const addButton = document.getElementById('add-link-button');
+        
+            addButton.addEventListener('click', () => {
+                const linkDiv = document.createElement('div');
+                linkDiv.classList.add('watch-link');
+                linkDiv.innerHTML = `
+                    <input type="text" name="watch_links[]" placeholder="Ссылка на просмотр" required>
+                    <select name="platform_ids[]">
+                        {% for platform in platforms %}
+                            <option value="{{ platform[0] }}">{{ platform[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="remove-link">Удалить</button>
+                `;
+                container.appendChild(linkDiv);
+            });
+        
+            container.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-link')) {
+                    e.target.parentElement.remove();
+                }
+            });
+        });
+    </script>
+{% endblock %}

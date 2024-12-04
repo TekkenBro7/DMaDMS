@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Профиль пользователя
+{% endblock %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Профиль пользователя</h1>
+    <div id="profile-view">
+        {% if profile %}
+            <div class="profile-info ">
+                <img src="{{ url_for('static', filename='img/users/' + profile.avatar_url) }}" alt="Аватар" width="150">
+                <p><strong>Имя:</strong> <span id="name">{{ profile.name }}</span></p>
+                <p><strong>Фамилия:</strong> <span id="sirname">{{ profile.sirname }}</span></p>
+                <p><strong>Пол:</strong> <span id="gender">{{ profile.gender }}</span></p>
+                <p><strong>Дата рождения:</strong> <span id="birth_date">{{ profile.birth_date }}</span></p>
+            </div>
+        {% else %}
+            <p>Информация о профиле отсутствует.</p>
+        {% endif %}
+        <button class="btn" id="edit-btn">Редактировать</button>
+    </div>
+    <div id="profile-edit" style="display: none;">
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Имя:</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ profile.name }}">
+            </div>
+            <div class="form-group">
+                <label for="sirname">Фамилия:</label>
+                <input type="text" id="sirname" name="sirname" class="form-control" value="{{ profile.sirname }}">
+            </div>
+            <div class="form-group">
+                <label for="gender">Пол:</label>
+                <select id="gender" name="gender" class="form-control">
+                    <option value="" {% if profile.gender is none %}selected{% endif %}>Не указано</option>
+                    <option value="Мужской" {% if profile.gender == 'Мужской' %}selected{% endif %}>Мужской</option>
+                    <option value="Женский" {% if profile.gender == 'Женский' %}selected{% endif %}>Женский</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="birth_date">Дата рождения:</label>
+                <input type="date" id="birth_date" name="birth_date" class="form-control" value="{{ profile.birth_date }}" min="1940-01-01" max="{{ current_date }}">
+            </div>
+            <div class="form-group">
+                <label for="avatar">Аватар:</label>
+                <input type="file" id="avatar" name="avatar" class="form-control" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-success">Сохранить</button>
+            <button type="button" id="cancel-btn" class="btn btn-secondary">Отмена</button>
+        </form>
+    </div>
+</div>
+
+<div class="bookmarks-section">
+    <h2>Ваши закладки</h2>
+    {% if bookmarks %}
+        <div class="anime-bookmarks">
+            {% for bookmark in bookmarks %}
+                <div class="bookmark-card">
+                    <img src="{{ url_for('static', filename='img/anime/' + (bookmark.poster_url if bookmark.poster_url else 'default.png')) }}" 
+                         alt="{{ bookmark.anime_title }}" 
+                         class="anime-poster">
+                    <div class="bookmark-info">
+                        <h3>{{ bookmark.anime_title }}</h3>
+                        <p>Статус: {{ bookmark.bookmark_status }}</p>
+                        <a href="{{ url_for('anime.anime_detail', anime_id=bookmark.anime_id) }}" class="btn">Подробнее</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>У вас пока нет закладок.</p>
+    {% endif %}
+</div>
+
+
+<script>
+    document.getElementById('edit-btn').addEventListener('click', function () {
+        document.getElementById('profile-view').style.display = 'none';
+        document.getElementById('profile-edit').style.display = 'block';
+    });
+
+    document.getElementById('cancel-btn').addEventListener('click', function () {
+        document.getElementById('profile-edit').style.display = 'none';
+        document.getElementById('profile-view').style.display = 'block';
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime_details.css') }}">
+{% endblock %}
+
+{% block title %}
+    Детали
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ anime.id }}</h1>
+<h1 class="anime-title">{{ anime.title }}</h1>
+<div class="anime-details">
+    <img src="{{ url_for('static', filename='img/anime/' + anime.poster_url) }}" alt="Постер {{ anime.title }}" class="anime-poster">
+    <div class="details">
+        <p class="anime-description">{{ anime.description }}</p>
+        <p class="release-date">Дата выхода: <span>{{ anime.release_date }}</span></p>
+        <p class="age-limit">Возрастное ограничение: <span>{{ anime.age_limit }}+</span></p>
+        <p class="genres">Жанры: <span>{{ anime.genres | join(', ') }}</span></p>
+        {% if anime.publisher_name %}
+            <p class="publisher">Издатель: <span>{{ anime.publisher_name }}</span></p>
+        {% endif %}
+        <div class="rating-container">
+            {% if anime.average_rating > 0 %}
+                <p class="average-rating">Средний рейтинг: 
+                    <span class="rating-value">{{ anime.average_rating }}</span>
+                    <span class="stars">
+                        {% for i in range(0, 10, 2) %}
+                            {% if i < anime.average_rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </p>
+            {% endif %}
+        </div>
+        <div class="watch-links">
+            <h3>Где посмотреть:</h3>
+            <div class="links-container">
+                {% for link in anime.watch_links %}
+                    {% if link %}
+                        <a href="{{ link.split(' ')[0] }}" target="_blank" class="watch-link">{{ link }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% if user.role == 'Admin' %}
+    <div class="admin-actions">
+        <a class="edit-btn" href="{{ url_for('anime.edit_anime', anime_id=anime.id) }}">Изменить</a>
+        <form action="{{ url_for('anime.delete_anime', anime_id=anime.id) }}" method="POST" style="display: inline;">
+            <button type="submit" class="delete-btn">Удалить</button>
+        </form>
+    </div>
+{% endif %}
+    <div class="bookmark-section">
+        <h2>Закладки</h2>
+        <form id="bookmarkForm">
+            <select id="bookmarkStatus" name="status_id">
+                <option value="">Не указано</option>  <!-- Опция "Не указано" по умолчанию -->
+                {% for status_id, status in bookmark_statuses %}
+                    <option value="{{ status_id }}" 
+                        {% if current_bookmark and current_bookmark[0] == status_id %}
+                            selected
+                        {% endif %}>
+                        {{ status }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="button" id="saveBookmarkBtn">Сохранить</button>
+        </form>
+    </div>
+    
+    <div class="comments">
+        <h2>Комментарии</h2>
+        <form action="{{ url_for('review.add_comment', anime_id=anime.id) }}" method="POST">
+            <textarea name="content" placeholder="Напишите комментарий" required></textarea><br>
+            <input type="number" name="rating" min="0" step="0.1" max="10" placeholder="Оценка (0-10)">
+            <button type="submit" class="submit-btn">Отправить</button>
+        </form>
+        {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.username }}</strong> ({{ comment.created_at }}):</p>
+            <p>{{ comment.content }}</p>
+            <p>Оценка: {{ comment.rating }} | Лайки: <span class="like-count">{{ comment.likes }}</span> 
+                | Дизлайки: <span class="dislike-count">{{ comment.dislikes }}</span>
+            </p>
+            <div class="actions">
+                <button class="like" data-id="{{ comment.id }}" data-like="true">Лайк</button>
+                <button class="dislike" data-id="{{ comment.id }}" data-like="false">Дизлайк</button>
+                {% if user.role == 'Admin' %}
+                <form action="{{ url_for('review.delete_comment', anime_id=anime.id, comment_id=comment.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="delete-comment-btn">Удалить</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const title = document.querySelector('.anime-title');
+        title.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.querySelectorAll('.like, .dislike').forEach(btn => {
+        btn.addEventListener('click', async(e) => {
+            const reviewId = e.target.dataset.id;
+            const isLike = e.target.dataset.like === 'true';
+            const response = await fetch(`/review/{{ anime.id }}/comment/${reviewId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_like: isLike })
+            });
+            const data = await response.json();
+            if (data.success) {
+                const comment = e.target.closest('.comment');
+                const likesCount = comment.querySelector('.like-count');
+                const dislikesCount = comment.querySelector('.dislike-count');
+                likesCount.textContent = data.likes;
+                dislikesCount.textContent = data.dislikes;
+                btn.classList.toggle('active');
+                const otherBtn = comment.querySelector(isLike ? '.dislike' : '.like');
+                otherBtn.classList.remove('active');
+            }
+        });
+    });
+    document.getElementById('saveBookmarkBtn').addEventListener('click', async() => {
+        const statusId = document.getElementById('bookmarkStatus').value;
+        const response = await fetch(`/bookmark/{{ anime.id }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status_id: statusId })
+        });
+    
+        const data = await response.json();
+        if (data.success) {
+            alert('Статус обновлен!');
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.message);
+        }
+    });
+    
+</script>
+
+{% endblock %}

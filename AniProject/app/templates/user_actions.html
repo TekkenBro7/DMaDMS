@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Действия пользователей
+{% endblock %}
+
+{% block href %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_actions.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-panel">
+    <h1>Действия пользователей</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th><a href="?sort_by=username&order={{ 'asc' if order == 'desc' else 'desc' }}">Пользователь</a></th>
+                <th>Действие</th>
+                <th><a href="?sort_by=action_time&order={{ 'asc' if order == 'desc' else 'desc' }}">Дата</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[0] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}&sort_by={{ sort_by }}&order={{ order }}" class="button">&laquo</a>
+        {% else %}
+            <span class="disabled-button">&laquo</span>
+        {% endif %}
+        {% for p in range(1, total_pages + 1) %}
+            <a href="?page={{ p }}&sort_by={{ sort_by }}&order={{ order }}" 
+               class="{{ 'active' if p == page else '' }}">{{ p }}</a>
+        {% endfor %}
+        {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}&sort_by={{ sort_by }}&order={{ order }}" class="button">&raquo</a>
+        {% else %}
+            <span class="disabled-button">&raquo</span>
+        {% endif %}
+    </div>
+    <div class="log-cleanup">
+        <h2>Удаление старых логов</h2>
+        <form method="post" action="{{ url_for('admin.delete_old_logs') }}">
+            <label for="days">Количество дней:</label>
+            <input type="number" id="days" name="days" min="1" placeholder="Введите количество дней" required>
+            <button type="submit" class="button">Удалить</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="icon" href="https://store.animeportal.gr/cdn/shop/files/logo_concept1_1.png?v=1647947972&width=400" type="image/png"> {% block href %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="logo">
+                    <a href="{{ url_for('index.index') }}" class="logo-link">
+                        <img src="https://store.animeportal.gr/cdn/shop/files/logo_concept1_1.png?v=1647947972&width=400" alt="Логотип" class="logo-img" /> AniMondo
+                    </a>
+                </div>
+                <div class="nav-links">
+                    {% if user.is_authenticated %} {% if user.role == 'Admin' %}
+                    <div class="admin-options">
+                        <button class="admin-button" onclick="toggleAdminOptions()">Опции администратора</button>
+                        <div id="admin-links" class="dropdown-content" style="display: none;">
+                            <p><a href="{{ url_for('users.get_users') }}">Все пользователи</a></p>
+                            <p><a href="{{ url_for('anime.add_anime') }}">Добавить аниме</a></p>
+                            <p><a href="{{ url_for('admin.user_actions') }}">Действия пользователей</a></p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <a href="{{ url_for('profile.profile') }}" class="nav-link">Профиль</a>
+                    <a href="{{ url_for('auth.logout') }}" class="logout-link">Выйти</a> {% else %}
+                    <a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a>
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">Вход</a> {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <br><br><br><br><br><br> {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <main>
+        {% block content %} {% endblock %}
+    </main>
+
+
+
+    <br><br><br><br><br><br><br><br>
+
+    <footer>
+        <div class="container-footer">
+            <div class="footer-content">
+                <h3>О платформе</h3>
+                <p>© 2024 Animondo — ваш веб-портал для поклонников аниме. Здесь вы можете находить, обсуждать и оценивать аниме-сериалы и фильмы.</p>
+                <p>На нашей платформе вы можете оставлять отзывы о просмотренных произведениях, а также оценивать отзывы других пользователей, чтобы делиться своим мнением и находить новые любимые аниме.</p>
+            </div>
+            <div class="footer-content">
+                <h3>Быстрые ссылки</h3>
+                <ul class="list">
+                    <li><a href="{{ url_for('index.index') }}">Home</a></li>
+                    <li><a href="/">About</a></li>
+                    <li><a href="/">Services</a></li>
+                    <li><a href="/">Products</a></li>
+                    <li><a href="/">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-content">
+                <h3>Наши контакты</h3>
+                <p>Почта: info@example.com</p>
+                <p>Телефон: +121 56556 565556</p>
+                <p>Адресс: г. Минск, ул. Колесникова, 44, офис 3а</p>
+            </div>
+            <div class="footer-content">
+                <h3>Подпишись на нас</h3>
+                <ul class="social-icons">
+                    <li>
+                        <a href="/"><img src="https://cdn.pixabay.com/photo/2018/05/08/18/25/facebook-3383596_960_720.png" alt="Facebook" /></a>
+                    </li>
+                    <li>
+                        <a href="/"><img src="https://cdn-icons-png.flaticon.com/512/3938/3938028.png" alt="Twitter" /></a>
+                    </li>
+                    <li>
+                        <a href="/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Instagram_logo_2022.svg/2048px-Instagram_logo_2022.svg.png" alt="Instagram" /></a>
+                    </li>
+                    <li>
+                        <a href="/"><img src="https://cdn.worldvectorlogo.com/logos/linkedin-icon.svg" alt="LinkedIn" /></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <p>&copy; 2024. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+
+<script>
+    function toggleAdminOptions() {
+        const adminLinks = document.getElementById('admin-links');
+        const adminButton = document.querySelector('.admin-button');
+        if (adminLinks.style.display === 'none' || adminLinks.style.display === '') {
+            adminLinks.style.display = 'block';
+            adminButton.style.backgroundColor = '#0056b3';
+        } else {
+            adminLinks.style.display = 'none';
+            adminButton.style.backgroundColor = '';
+        }
+    }
+    window.onclick = function(event) {
+        const adminLinks = document.getElementById('admin-links');
+        const adminButton = document.querySelector('.admin-button');
+        if (!adminButton.contains(event.target) && !adminLinks.contains(event.target)) {
+            adminLinks.style.display = 'none';
+            adminButton.style.backgroundColor = '';
+        }
+    };
+</script>
+
+</html>
